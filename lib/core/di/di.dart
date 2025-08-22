@@ -1,11 +1,21 @@
-// import 'package:get_it/get_it.dart';
-// import 'package:injectable/injectable.dart';
-//
-// final getIt = GetIt.instance;
-//
-// @InjectableInit(
-//   initializerName: 'init', // You can name it something else if you want
-//   preferRelativeImports: true,
-//   asExtension: true,
-// )
-// void configureDependencies() => getIt.init(); // This is calling the generated extension
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
+import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
+import 'di.config.dart';
+
+final getIt = GetIt.instance;
+
+@InjectableInit(
+  initializerName: 'init',
+  preferRelativeImports: true,
+  asExtension: true,
+)
+Future<void> configureDependencies() async {
+  try {
+    getIt.init();
+    getIt.registerLazySingleton(() => FirebaseAuth.instance);
+  } catch (e) {
+    print('Dependency injection initialization error: $e');
+    rethrow;
+  }
+}

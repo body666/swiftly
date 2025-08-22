@@ -13,4 +13,10 @@ class AppColors {
   static const kPink = Color(0xFFD21E6A);
   static const kBabyPink = Color(0xFFF9ECF0);
   static const kGreen = Color(0xFF0CB359);
+
+  static const Color primary = Color(0xFF00BFA6); // Electric Teal
+  static const Color accent = Color(0xFFFF7A5A); // Bright Coral
+  static const Color darkText = Color(0xFF2F2F2F); // Charcoal Gray
+  static const Color lightBackground = Color(0xFFF9F9F9); // Off-White
+  static const Color divider = Color(0xFFE0E0E0); // Light Gray
 }
