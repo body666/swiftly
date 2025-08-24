@@ -1,23 +1,29 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swiftly/presentation/auth/login/view_model/login_screen_view_model.dart'
-    show LoginCubit, LoginScreenViewModel;
 import 'core/di/di.dart' as di;
-
-import 'core/routes/app_routes.dart' show AppRoutes;
+import 'firebase_options.dart';
+import 'core/routes/app_routes.dart';
 import 'core/routes/page_route_name.dart';
-import 'presentation/auth/login/view/login_screen_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  di.configureDependencies();
+
   try {
-    await Firebase.initializeApp();
-    await di.configureDependencies();
+    // Initialize Firebase
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // Initialize dependency injection
+    di.configureDependencies();
+
     runApp(const MyApp());
   } catch (e) {
     print('Initialization error: $e');
+    // Still run the app even if there's an initialization error
+    runApp(const MyApp());
   }
 }
 
@@ -50,10 +56,6 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: PageRouteName.login,
           onGenerateRoute: AppRoutes.onGenerateRoute,
-          home: BlocProvider(
-            create: (_) => di.getIt<LoginScreenViewModel>(),
-            child: const LoginScreen(),
-          ),
         );
       },
     );

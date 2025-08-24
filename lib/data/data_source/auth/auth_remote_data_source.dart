@@ -14,4 +14,15 @@ class AuthRemoteDataSource {
       throw Exception(e.message ?? 'Login failed');
     }
   }
+
+  Future<void> signUpWithEmailAndPassword(
+      String email, String password, String name) async {
+    try {
+      final UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await userCredential.user?.updateDisplayName(name);
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? 'Sign up failed');
+    }
+  }
 }
