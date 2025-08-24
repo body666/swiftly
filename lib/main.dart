@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,10 @@ void main() async {
   try {
     await Firebase.initializeApp();
     await di.configureDependencies();
+    FirebaseAuth.instance.setSettings(
+      appVerificationDisabledForTesting: false, // Set to true only for testing
+      forceRecaptchaFlow: false, // Let Firebase decide when to use reCAPTCHA
+    );
     runApp(const MyApp());
   } catch (e) {
     print('Initialization error: $e');

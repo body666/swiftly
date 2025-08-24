@@ -1,17 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:injectable/injectable.dart';
+import '../../../core/result/result.dart' show Result;
 
-@lazySingleton
-class AuthRemoteDataSource {
-  final FirebaseAuth _auth;
-
-  AuthRemoteDataSource(this._auth);
-
-  Future<void> loginWithEmailAndPassword(String email, String password) async {
-    try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? 'Login failed');
-    }
-  }
+abstract class AuthRemoteDataSource {
+  Future<void> loginWithEmailAndPassword(String email, String password);
+  Future<Result<void>> resetPassword(String email);
 }

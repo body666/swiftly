@@ -4,6 +4,26 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../colors/app_colors.dart';
 
 class AppFonts {
+  static TextStyle font14PrimaryWeight600 = TextStyle(
+    fontSize: 14.sp,
+    color: AppColors.primary,
+    fontWeight: FontWeight.w600,
+  );
+
+  static TextStyle font28PrimaryBold = TextStyle(
+    fontSize: 28.sp,
+    color: AppColors.primary,
+    fontWeight: FontWeight.bold,
+  );
+
+  static TextStyle font14AccentBold = TextStyle(
+    fontSize: 14.sp,
+    color: AppColors.accent,
+    fontWeight: FontWeight.bold,
+  );
+
+  ////////////////////////////////////////
+
   static TextStyle font20BlackWeight700 = TextStyle(
     fontSize: 20.sp,
     color: AppColors.kBlack,

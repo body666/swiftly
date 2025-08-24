@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.swiftly"
-        minSdk = 23 // Updated to match firebase-auth:23.2.1 requirement
+        minSdk = 23 // Updated to match result-auth:23.2.1 requirement
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
