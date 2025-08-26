@@ -4,6 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../styles/colors/app_colors.dart';
 import '../../styles/fonts/app_fonts.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../styles/colors/app_colors.dart';
+import '../../styles/fonts/app_fonts.dart';
+
 class CustomTextFormField extends StatefulWidget {
   final TextEditingController? controller;
   final String? hintText;
@@ -11,7 +17,8 @@ class CustomTextFormField extends StatefulWidget {
   final String? initialTextValue, obscuringCharacter;
   final int? maxLength, maxLines, minLines, errorMaxLines;
   final bool? enabled, isPassword, isFilled;
-  final TextStyle? inputTextStyle, hintStyle, errorStyle;
+  // Renamed 'inputTextStyle' to 'style'
+  final TextStyle? style, hintStyle, errorStyle;
   final Color? backgroundColor, disabledBackgroundColor, suffixIconColor;
   final InputBorder? border,
       enabledBorder,
@@ -38,11 +45,13 @@ class CustomTextFormField extends StatefulWidget {
       focusedErrorBorderRadius;
   final num? scrollPaddingValue;
   final EdgeInsetsGeometry? contentPadding;
-  final TextInputType? keyBordType;
+  final TextInputType? keyboardType; // Corrected typo from 'keyBordType'
   final TextInputAction? textInputAction;
   final AutovalidateMode? autovalidateMode;
   final String? Function(String?)? validator;
-  final void Function(String)? onChanged, onFieldSubmitted, onSaved;
+  final void Function(String)? onChanged, onFieldSubmitted;
+  final void Function(String?)?
+  onSaved; // Corrected type to accept nullable String
   final void Function()? onEditingComplete, onTap;
   final List<TextInputFormatter>? inputFormatters;
   final Widget? suffixIcon, prefixIcon;
@@ -91,7 +100,7 @@ class CustomTextFormField extends StatefulWidget {
     this.inputFormatters,
     this.isFilled,
     this.isPassword,
-    this.keyBordType,
+    this.keyboardType, // Corrected typo
     this.maxLength,
     this.maxLines,
     this.minLines,
@@ -103,7 +112,7 @@ class CustomTextFormField extends StatefulWidget {
     this.onTap,
     this.contentPadding,
     this.prefixIcon,
-    this.inputTextStyle,
+    this.style, // Added the 'style' parameter here
     this.scrollPaddingValue,
     this.suffixIcon,
     this.suffixIconColor,
@@ -122,7 +131,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   void initState() {
     super.initState();
     // MaxLines must equals 1 if obscureText is true
-    if (widget.isPassword != null && widget.isPassword!) {
+    if (widget.isPassword == true) {
       isTextObscured = true;
       maxLines = 1;
     } else {
@@ -136,9 +145,12 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return TextFormField(
       controller: widget.controller,
       initialValue: widget.initialTextValue,
+      // This is the crucial fix: applying the style to the input text
+      style: widget.style,
       autovalidateMode: widget.autovalidateMode,
       validator: widget.validator,
       onChanged: widget.onChanged,
+      onSaved: widget.onSaved,
       onEditingComplete: widget.onEditingComplete,
       onFieldSubmitted: widget.onFieldSubmitted,
       onTap: widget.onTap,
@@ -150,7 +162,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       maxLength: widget.maxLength,
       maxLines: maxLines,
       minLines: widget.minLines,
-      keyboardType: widget.keyBordType,
+      keyboardType: widget.keyboardType,
       inputFormatters: widget.inputFormatters,
       textInputAction: widget.textInputAction ?? TextInputAction.next,
       scrollPadding: widget.scrollPaddingValue == null
@@ -164,26 +176,25 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       enabled: widget.enabled,
       decoration: InputDecoration(
         labelText: widget.labelText,
+        labelStyle: TextStyle(color: AppColors.kGray),
         floatingLabelStyle: WidgetStateTextStyle.resolveWith((
           Set<WidgetState> states,
         ) {
           if (states.contains(WidgetState.focused)) {
-            return TextStyle(color: AppColors.kPink);
+            return TextStyle(color: AppColors.accent);
           } else if (states.contains(WidgetState.error)) {
-            return TextStyle(color: AppColors.kError);
+            return TextStyle(color: AppColors.accent);
           }
           return TextStyle(color: Colors.grey);
         }),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
         hintText: widget.hintText,
         hintStyle: widget.hintStyle ?? AppFonts.font14GreyWeight400,
         fillColor: (widget.enabled != null && widget.enabled == false)
             ? widget.disabledBackgroundColor ?? AppColors.kGray
-            : widget.backgroundColor ?? AppColors.kWhite,
-        filled: widget.isFilled ?? true,
+            : widget.backgroundColor,
+        filled: widget.isFilled,
         prefixIcon: widget.prefixIcon,
-        prefixIconColor: AppColors.kPink,
-        suffixIcon: widget.isPassword ?? false
+        suffixIcon: widget.isPassword == true
             ? GestureDetector(
                 onTap: () {
                   setState(() {
@@ -192,79 +203,21 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 },
                 child: Icon(
                   isTextObscured ? Icons.visibility_off : Icons.visibility,
+                  color: widget.suffixIconColor ?? AppColors.kLightGrey,
                 ),
               )
             : widget.suffixIcon,
         counterText: "",
-        border:
-            widget.border ??
-            OutlineInputBorder(
-              borderRadius: BorderRadius.circular(widget.borderRadius ?? 4.r),
-              borderSide: BorderSide(
-                color: widget.borderColor ?? AppColors.kGray,
-                width: widget.borderWidth ?? 1,
-              ),
-            ),
-        enabledBorder:
-            widget.enabledBorder ??
-            OutlineInputBorder(
-              borderRadius: BorderRadius.circular(
-                widget.enabledBorderRadius ?? 4.r,
-              ),
-              borderSide: BorderSide(
-                color: widget.enabledBorderColor ?? AppColors.kGray,
-                width: widget.enabledBorderWidth ?? 1,
-              ),
-            ),
-        focusedBorder:
-            widget.focusedBorder ??
-            OutlineInputBorder(
-              borderRadius: BorderRadius.circular(
-                widget.focusedBorderRadius ?? 4.r,
-              ),
-              borderSide: BorderSide(
-                color: widget.focusedBorderColor ?? AppColors.kPink,
-                width: widget.focusedBorderWidth ?? 1,
-              ),
-            ),
-        disabledBorder:
-            widget.disabledBorder ??
-            OutlineInputBorder(
-              borderRadius: BorderRadius.circular(
-                widget.disabledBorderRadius ?? 4.r,
-              ),
-              borderSide: BorderSide(
-                color:
-                    widget.disabledBackgroundColor ?? const Color(0xFFE6E6E6),
-                width: widget.disabledBorderWidth ?? 1,
-              ),
-            ),
+        border: widget.border,
+        enabledBorder: widget.enabledBorder,
+        focusedBorder: widget.focusedBorder,
+        disabledBorder: widget.disabledBorder,
         errorStyle:
             widget.errorStyle ??
-            TextStyle(color: AppColors.kError, fontSize: 14.sp),
+            TextStyle(color: Colors.redAccent, fontSize: 14.sp),
         errorMaxLines: widget.errorMaxLines ?? 4,
-        errorBorder:
-            widget.errorBorder ??
-            OutlineInputBorder(
-              borderRadius: BorderRadius.circular(
-                widget.errorBorderRadius ?? 4.r,
-              ),
-              borderSide: BorderSide(
-                color: widget.errorBorderColor ?? AppColors.kError,
-                width: widget.errorBorderWidth ?? 1,
-              ),
-            ),
-        focusedErrorBorder:
-            widget.focusedErrorBorder ??
-            OutlineInputBorder(
-              borderRadius: BorderRadius.circular(
-                widget.focusedErrorBorderRadius ?? 4.r,
-              ),
-              borderSide: BorderSide(
-                color: widget.focusedErrorBorderColor ?? AppColors.kError,
-                width: widget.focusedErrorBorderWidth ?? 1,
-              ),
-            ),
+        errorBorder: widget.errorBorder,
+        focusedErrorBorder: widget.focusedErrorBorder,
       ),
     );
   }
